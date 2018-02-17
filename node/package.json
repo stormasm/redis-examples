@@ -1,0 +1,14 @@
+{
+  "name": "node-redis-examples",
+  "version": "1.0.0",
+  "description": "reading and writing data to redis with javascript",
+  "main": "usage.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michael Angerman",
+  "license": "MIT",
+  "dependencies": {
+    "redis": "^2.8.0"
+  }
+}
