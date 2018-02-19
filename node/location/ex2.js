@@ -1,15 +1,14 @@
 import * as fs from "fs";
 import request from "request";
 
+var redis = require("redis");
+const { promisify } = require("util");
 const { URL } = require("url");
 const DIRECTORY = "./data/out/";
 
-var redis = require("redis");
-
-const { promisify } = require("util");
-// const getAsync = promisify(client.get).bind(client);
-
 /*
+const getAsync = promisify(client.get).bind(client);
+
 client.on("error", function(err) {
   console.log("Error " + err);
 });
@@ -132,8 +131,6 @@ async function processRedis(filename, api, apikey) {
 
   // Do NOT forget to stringify the JSON !!
   githubData = JSON.stringify(githubData);
-
-  //let writeResult = await writeJsonDataToFilename(filename, githubData, "utf8");
 
   let setAsync = promisify(client.set).bind(client);
   let writeResult = await setAsync(filename, githubData);
