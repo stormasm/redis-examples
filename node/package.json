@@ -4,8 +4,8 @@
   "description": "reading and writing data to redis with javascript",
   "main": "usage.js",
   "scripts": {
-    "build": "babel location/ex1.js -d lib",
-    "start": "npm run build && node lib/location/ex1.js"
+    "build": "babel location/ex2.js -d lib",
+    "start": "npm run build && node lib/location/ex2.js"
   },
   "author": "Michael Angerman",
   "license": "MIT",
