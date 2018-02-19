@@ -4,16 +4,16 @@ import request from "request";
 const { URL } = require("url");
 const DIRECTORY = "./data/out/";
 
-var redis = require("redis"),
-  client = redis.createClient();
+var redis = require("redis");
 
 const { promisify } = require("util");
-const getAsync = promisify(client.get).bind(client);
-const setAsync = promisify(client.set).bind(client);
+// const getAsync = promisify(client.get).bind(client);
 
+/*
 client.on("error", function(err) {
   console.log("Error " + err);
 });
+*/
 
 async function getJsonKeyFromFile(filename) {
   var r1 = await readJsonDataFromFilename(filename, "utf8");
@@ -127,6 +127,7 @@ async function processFile(filename, api, apikey) {
 }
 
 async function processRedis(filename, api, apikey) {
+  let client = redis.createClient();
   let githubData = await getGithubData(api, apikey);
 
   // Do NOT forget to stringify the JSON !!
@@ -134,9 +135,11 @@ async function processRedis(filename, api, apikey) {
 
   //let writeResult = await writeJsonDataToFilename(filename, githubData, "utf8");
 
+  let setAsync = promisify(client.set).bind(client);
   let writeResult = await setAsync(filename, githubData);
 
   console.log(`${writeResult} has been saved.`);
+  client.quit();
 }
 
 async function goFile() {
@@ -161,7 +164,6 @@ async function goRedis() {
     let cityStateFilename = getCityStateFromApi(apiAry[i]);
     await processRedis(cityStateFilename, apiAry[i], githubApiKey);
   }
-  client.quit();
 }
 
 /*
