@@ -4,6 +4,16 @@ import request from "request";
 const { URL } = require("url");
 const DIRECTORY = "./data/out/";
 
+var redis = require("redis"),
+  client = redis.createClient();
+
+const { promisify } = require("util");
+const getAsync = promisify(client.get).bind(client);
+
+client.on("error", function(err) {
+  console.log("Error " + err);
+});
+
 async function getJsonKeyFromFile(filename) {
   var r1 = await readJsonDataFromFilename(filename, "utf8");
   var r2 = r1.trim();
@@ -127,4 +137,11 @@ async function go() {
   }
 }
 
-go();
+async function gor1() {
+  const res = await getAsync("foo");
+  console.log(res);
+  client.quit();
+}
+
+gor1();
+// go();
