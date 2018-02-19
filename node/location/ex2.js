@@ -9,6 +9,7 @@ var redis = require("redis"),
 
 const { promisify } = require("util");
 const getAsync = promisify(client.get).bind(client);
+const setAsync = promisify(client.set).bind(client);
 
 client.on("error", function(err) {
   console.log("Error " + err);
@@ -115,7 +116,7 @@ async function getGithubData(api, key) {
   });
 }
 
-async function process(filename, api, apikey) {
+async function processFile(filename, api, apikey) {
   let githubData = await getGithubData(api, apikey);
 
   // Do NOT forget to stringify the JSON !!
@@ -125,7 +126,20 @@ async function process(filename, api, apikey) {
   console.log(`${writeResult} has been saved.`);
 }
 
-async function go() {
+async function processRedis(filename, api, apikey) {
+  let githubData = await getGithubData(api, apikey);
+
+  // Do NOT forget to stringify the JSON !!
+  githubData = JSON.stringify(githubData);
+
+  //let writeResult = await writeJsonDataToFilename(filename, githubData, "utf8");
+
+  let writeResult = await setAsync(filename, githubData);
+
+  console.log(`${writeResult} has been saved.`);
+}
+
+async function goFile() {
   let githubApiKey = await getJsonKeyFromFile("./data/f1.js");
   let cities = await readJsonDataFromFilename("./data/cities-small.js", "utf8");
   let apiAry = buildCityApiAry(cities);
@@ -133,15 +147,31 @@ async function go() {
   let arrayLength = apiAry.length;
   for (var i = 0; i < arrayLength; i++) {
     let cityStateFilename = getCityStateFromApi(apiAry[i]);
-    await process(cityStateFilename, apiAry[i], githubApiKey);
+    await processFile(cityStateFilename, apiAry[i], githubApiKey);
   }
 }
 
-async function gor1() {
+async function goRedis() {
+  let githubApiKey = await getJsonKeyFromFile("./data/f1.js");
+  let cities = await readJsonDataFromFilename("./data/cities-small.js", "utf8");
+  let apiAry = buildCityApiAry(cities);
+
+  let arrayLength = apiAry.length;
+  for (var i = 0; i < arrayLength; i++) {
+    let cityStateFilename = getCityStateFromApi(apiAry[i]);
+    await processRedis(cityStateFilename, apiAry[i], githubApiKey);
+  }
+  client.quit();
+}
+
+/*
+Assume the foo key exists
+async function goRedisTest() {
   const res = await getAsync("foo");
   console.log(res);
   client.quit();
 }
+*/
 
-gor1();
-// go();
+goRedis();
+// goFile();
