@@ -1,1 +1,3 @@
 # redis-examples
+
+ok
